@@ -1,0 +1,9 @@
+{
+	"name": "keboola/app-what3words",
+	"license": "MIT",
+    "require": {
+        "keboola/csv": "^1.1",
+        "php": "^7.1",
+        "what3words/w3w-php-wrapper": "^2.2"
+    }
+}
