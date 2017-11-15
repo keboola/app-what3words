@@ -3,7 +3,7 @@
 use Keboola\Csv\CsvFile;
 use What3words\Geocoder\Geocoder;
 
-include "vendor/autoload.php";
+require "vendor/autoload.php";
 
 try {
     $dataDir = getenv('KBC_DATADIR') === false ? '/data' : getenv('KBC_DATADIR');
@@ -12,20 +12,27 @@ try {
     if (json_last_error() != JSON_ERROR_NONE) {
         throw new Exception("Config file error or not found");
     }
-    if (empty($config['storage']['input']['tables']) || count($config['storage']['input']['tables']) > 1) {
-        throw new Exception("Exactly one table must be on input");
+    if (empty($config['storage']['input']['tables'])
+        || (count($config['storage']['input']['tables']) > 1)
+    ) {
+        throw new InvalidArgumentException("Exactly one table must be on input");
     }
-    $sourceFileName = $dataDir . DIRECTORY_SEPARATOR . 'in' . DIRECTORY_SEPARATOR . 'tables' . DIRECTORY_SEPARATOR .
-        $config['storage']['input']['tables'][0]['destination'];
+    $sourceFileName = $dataDir . DIRECTORY_SEPARATOR . 'in' . DIRECTORY_SEPARATOR .
+        'tables' . DIRECTORY_SEPARATOR . $config['storage']['input']['tables'][0]['destination'];
     if (empty($config['parameters']['#apiKey'])) {
-        throw new Exception("api key is missing");
+        if (getenv('W3WTOKEN') !== false) {
+            $config['parameters']['#apiKey'] = getenv('W3WTOKEN');
+        } else {
+            throw new InvalidArgumentException("api key is missing");
+        }
     }
     $apiKey = $config['parameters']['#apiKey'];
-    $destinationFileName = $dataDir . DIRECTORY_SEPARATOR . 'out' . DIRECTORY_SEPARATOR . 'tables' .
-        DIRECTORY_SEPARATOR . 'result.csv';
-    if (empty($config['parameters']['direction']) ||
-        !in_array($config['parameters']['direction'], ['forward', 'reverse'])) {
-        throw new Exception('direction must be one of "forward", "reverse"');
+    $destinationFileName = $dataDir . DIRECTORY_SEPARATOR . 'out' . DIRECTORY_SEPARATOR .
+        'tables' . DIRECTORY_SEPARATOR . 'result.csv';
+    if (empty($config['parameters']['direction'])
+        || !in_array($config['parameters']['direction'], ['forward', 'reverse'])
+    ) {
+        throw new InvalidArgumentException('direction must be one of "forward", "reverse"');
     }
     $direction = $config['parameters']['direction'];
     if (empty($config['parameters']['lang'])) {
@@ -44,6 +51,9 @@ try {
     $csvIn = new CsvFile($sourceFileName);
     $csvOut = new CsvFile($destinationFileName);
     if ($direction == 'forward') {
+        if (count($csvIn->getHeader()) <> 1) {
+            throw new InvalidArgumentException('Input table must contain one column with words');
+        }
         $header[] = 'words';
         $header[] = 'lat';
         $header[] = 'lng';
@@ -72,6 +82,11 @@ try {
             $csvOut->writeRow($row);
         }
     } else {
+        if (count($csvIn->getHeader()) <> 2) {
+            throw new InvalidArgumentException(
+                'Input table must contain two columns, first with latitude and second with longitude.'
+            );
+        }
         $header[] = 'lat';
         $header[] = 'lng';
         $header[] = 'words';
@@ -98,7 +113,10 @@ try {
             $csvOut->writeRow($row);
         }
     }
-} catch (Exception $e) {
+} catch (InvalidArgumentException $e) {
     echo $e->getMessage();
     exit(1);
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit(2);
 }

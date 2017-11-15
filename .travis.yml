@@ -1,11 +1,15 @@
+sudo: required
 language: bash
-
 services:
   - docker
-
-script:
-  - docker build --tag=my-application .
-
+before_script:
+  - docker-compose build
+  - docker-compose run dev composer install
+  - docker-compose run dev ./vendor/bin/phpcs --standard=psr2 --ignore=vendor -n .
+  - docker-compose run dev ./vendor/bin/phpstan analyse  --level=7 ./tests ./main.php
+script: docker-compose run -e W3WTOKEN tests
+after_success:
+  - docker images
 deploy:
   provider: script
   skip_cleanup: true

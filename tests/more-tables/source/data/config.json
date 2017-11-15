@@ -1,0 +1,36 @@
+{
+    "storage": {
+        "input": {
+            "tables": [
+                {
+                    "source": "in.c-w3w.coords",
+                    "destination": "source.csv",
+                    "limit": 50,
+                    "columns": [],
+                    "where_values": [],
+                    "where_operator": "eq"
+                },
+                {
+                    "source": "in.c-w3w.table2",
+                    "destination": "source2.csv",
+                    "limit": 50,
+                    "columns": [],
+                    "where_values": [],
+                    "where_operator": "eq"
+                }                
+            ],
+            "files": []
+        }
+    },
+    "parameters": {
+        "lang": "en",
+        "#apiKey": "",
+        "direction": "reverse"
+    },
+    "processors": {
+        "before": [],
+        "after": []
+    },
+    "image_parameters": [],
+    "action": "run"
+}

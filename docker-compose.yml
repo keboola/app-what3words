@@ -1,0 +1,22 @@
+version: '2'
+services:
+  dev:
+    image: keboola/app-what3words
+    tty: true
+    stdin_open: true
+    volumes:
+      - .:/code
+
+  app-what3words:
+    build: .
+    image: keboola/app-what3words
+    tty: true
+    stdin_open: true
+
+  tests:
+    image: keboola/app-what3words
+    tty: true
+    stdin_open: true
+    volumes:
+      - .:/code
+    command: php /code/tests/run.php

@@ -1,0 +1,23 @@
+{
+    "id": "in.c-w3w.coords",
+    "uri": "https:\/\/connection.keboola.com\/v2\/storage\/tables\/in.c-w3w.coords",
+    "name": "coords",
+    "primary_key": [],
+    "indexed_columns": [],
+    "created": "2017-11-10T12:04:11+0100",
+    "last_change_date": "2017-11-10T12:04:15+0100",
+    "last_import_date": "2017-11-10T12:04:14+0100",
+    "rows_count": 6,
+    "data_size_bytes": 12582912,
+    "is_alias": false,
+    "columns": [
+        "lat",
+        "long"
+    ],
+    "attributes": [],
+    "metadata": [],
+    "column_metadata": {
+        "lat": [],
+        "long": []
+    }
+}
